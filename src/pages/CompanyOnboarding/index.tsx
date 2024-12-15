@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bot, Building2, MapPin, Users } from 'lucide-react';
+import { Building2 } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
-import { Input } from '../../components/ui/Input';
-import { Button } from '../../components/ui/Button';
 import { useAuth } from '../../contexts/AuthContext';
 import { validateEmail, validateRequired } from '../../utils/validation';
 import { createCompany, updateProfile } from '../../services/api';
-import BranchForm from '../../components/branches/BranchForm';
-import BranchList from '../../components/branches/BranchList';
-import { useBranches } from '../../hooks/useBranches';
+import StepIndicator from './components/StepIndicator';
+import CompanyInfoStep from './components/CompanyInfoStep';
+import ManagersStep from './components/ManagersStep';
+import BranchesStep from './components/BranchesStep';
 import toast from 'react-hot-toast';
 
 interface Manager {
@@ -21,6 +20,12 @@ interface FormData {
   companyName: string;
   managers: Manager[];
 }
+
+const STEPS = [
+  { number: 1, label: 'Company Info' },
+  { number: 2, label: 'Managers' },
+  { number: 3, label: 'Branches' },
+];
 
 const initialFormData: FormData = {
   companyName: '',
@@ -68,6 +73,15 @@ export default function CompanyOnboarding() {
     setCurrentStep((prev) => prev - 1);
   };
 
+  const handleManagerChange = (index: number, field: keyof Manager, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      managers: prev.managers.map((m, i) =>
+        i === index ? { ...m, [field]: value } : m
+      ),
+    }));
+  };
+
   const handleAddManager = () => {
     setFormData((prev) => ({
       ...prev,
@@ -80,14 +94,12 @@ export default function CompanyOnboarding() {
 
     setIsLoading(true);
     try {
-      // Create company
       const company = await createCompany({
         name: formData.companyName,
       });
 
       setCompanyId(company.id);
 
-      // Update current user's profile
       await updateProfile(user.id, {
         role: 'manager',
         company_id: company.id,
@@ -115,137 +127,36 @@ export default function CompanyOnboarding() {
         <p className="text-gray-400">Let's get your company set up in RNEbot</p>
       </div>
 
-      <div className="flex justify-between mb-8">
-        {[1, 2, 3].map((step) => (
-          <div
-            key={step}
-            className={`flex-1 text-center ${
-              currentStep === step
-                ? 'text-cyan-400'
-                : currentStep > step
-                ? 'text-gray-400'
-                : 'text-gray-600'
-            }`}
-          >
-            <div className="relative">
-              <div
-                className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center border-2 ${
-                  currentStep === step
-                    ? 'border-cyan-400 bg-gray-800'
-                    : currentStep > step
-                    ? 'border-gray-400 bg-gray-400'
-                    : 'border-gray-600 bg-gray-800'
-                }`}
-              >
-                {step}
-              </div>
-              {step < 3 && (
-                <div
-                  className={`absolute top-4 w-full h-0.5 ${
-                    currentStep > step ? 'bg-gray-400' : 'bg-gray-600'
-                  }`}
-                />
-              )}
-            </div>
-            <div className="mt-2">
-              {step === 1 && 'Company Info'}
-              {step === 2 && 'Managers'}
-              {step === 3 && 'Branches'}
-            </div>
-          </div>
-        ))}
-      </div>
+      <StepIndicator currentStep={currentStep} steps={STEPS} />
 
       <Card>
         {currentStep === 1 && (
-          <div className="space-y-6">
-            <Input
-              label="Company Name"
-              value={formData.companyName}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  companyName: e.target.value,
-                }))
-              }
-              error={errors.companyName}
-              placeholder="Enter your company name"
-            />
-            <div className="flex justify-end">
-              <Button onClick={handleNext}>Next</Button>
-            </div>
-          </div>
+          <CompanyInfoStep
+            companyName={formData.companyName}
+            onChange={(value) => setFormData((prev) => ({ ...prev, companyName: value }))}
+            onNext={handleNext}
+            error={errors.companyName}
+          />
         )}
 
         {currentStep === 2 && (
-          <div className="space-y-6">
-            {formData.managers.map((manager, index) => (
-              <div key={index} className="space-y-4">
-                <h3 className="text-lg font-medium text-white">
-                  Manager {index + 1}
-                </h3>
-                <Input
-                  label="Full Name"
-                  value={manager.name}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      managers: prev.managers.map((m, i) =>
-                        i === index ? { ...m, name: e.target.value } : m
-                      ),
-                    }))
-                  }
-                  error={errors[`manager${index}Name`]}
-                  placeholder="Enter manager's full name"
-                />
-                <Input
-                  label="Email Address"
-                  type="email"
-                  value={manager.email}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      managers: prev.managers.map((m, i) =>
-                        i === index ? { ...m, email: e.target.value } : m
-                      ),
-                    }))
-                  }
-                  error={errors[`manager${index}Email`]}
-                  placeholder="Enter manager's email"
-                />
-              </div>
-            ))}
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleAddManager}
-              className="w-full"
-            >
-              Add Another Manager
-            </Button>
-            <div className="flex justify-between">
-              <Button variant="secondary" onClick={handleBack}>
-                Back
-              </Button>
-              <Button onClick={handleCreateCompany} isLoading={isLoading}>
-                Create Company
-              </Button>
-            </div>
-          </div>
+          <ManagersStep
+            managers={formData.managers}
+            onManagerChange={handleManagerChange}
+            onAddManager={handleAddManager}
+            onBack={handleBack}
+            onNext={handleCreateCompany}
+            errors={errors}
+            isLoading={isLoading}
+          />
         )}
 
         {currentStep === 3 && companyId && (
-          <div className="space-y-6">
-            <BranchForm companyId={companyId} />
-            <div className="flex justify-between mt-6">
-              <Button variant="secondary" onClick={handleBack}>
-                Back
-              </Button>
-              <Button onClick={handleComplete}>
-                Complete Setup
-              </Button>
-            </div>
-          </div>
+          <BranchesStep
+            companyId={companyId}
+            onBack={handleBack}
+            onComplete={handleComplete}
+          />
         )}
       </Card>
     </div>
