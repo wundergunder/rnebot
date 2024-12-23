@@ -8,8 +8,5 @@ export const expertiseLevels: ExpertiseLevel[] = [
 ];
 
 export function formatExpertiseLevel(level: ExpertiseLevel): string {
-  return level
-    .split('_')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+  return level.charAt(0).toUpperCase() + level.slice(1);
 }
