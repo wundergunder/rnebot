@@ -11,7 +11,7 @@ export default function Navigation() {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate('/');
+    navigate('/login');
   };
 
   return (

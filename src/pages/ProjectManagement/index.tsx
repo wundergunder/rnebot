@@ -1,17 +1,22 @@
-import React from 'react';
-import { useCompany } from '../../hooks/useCompany';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Bot, Plus } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
-import ProjectList from './components/ProjectList';
-import ProjectForm from './components/ProjectForm';
-import { Bot } from 'lucide-react';
+import { Button } from '../../components/ui/Button';
+import { useCompany } from '../../hooks/useCompany';
+import ProjectList from '../../components/projects/ProjectList';
+import ProjectForm from '../../components/projects/ProjectForm';
+import { Spinner } from '../../components/ui/Spinner';
 
 export default function ProjectManagement() {
+  const navigate = useNavigate();
   const { company, loading } = useCompany();
+  const [showForm, setShowForm] = useState(false);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500"></div>
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <Spinner size="lg" />
       </div>
     );
   }
@@ -36,9 +41,21 @@ export default function ProjectManagement() {
         <p className="text-gray-400">Manage your company's projects and assignments</p>
       </div>
 
-      <Card>
-        <ProjectForm company={company} />
-      </Card>
+      <div className="flex justify-end">
+        <Button onClick={() => setShowForm(!showForm)}>
+          <Plus className="w-4 h-4 mr-2" />
+          {showForm ? 'Hide Form' : 'Add Project'}
+        </Button>
+      </div>
+
+      {showForm && (
+        <Card>
+          <ProjectForm 
+            companyId={company.id} 
+            onSuccess={() => setShowForm(false)}
+          />
+        </Card>
+      )}
 
       <Card>
         <ProjectList company={company} />
