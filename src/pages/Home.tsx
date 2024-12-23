@@ -53,13 +53,18 @@ export default function Home() {
                 colors: {
                   brand: '#06b6d4',
                   brandAccent: '#0891b2',
+                  inputText: 'white',
+                  inputBackground: '#374151',
+                  inputBorder: '#4B5563',
+                  inputLabelText: '#E5E7EB',
+                  inputPlaceholder: '#9CA3AF'
                 }
               }
             },
             className: {
               container: 'w-full',
               button: 'w-full',
-              input: 'rounded-md bg-gray-700 border-gray-600',
+              input: 'rounded-md bg-gray-700 border-gray-600 text-white',
               label: 'text-gray-300',
             }
           }}

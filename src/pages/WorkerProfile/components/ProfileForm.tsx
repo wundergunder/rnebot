@@ -16,7 +16,6 @@ interface FormData {
   email: string;
   cell_phone: string;
   home_address: string;
-  max_travel_distance: number;
 }
 
 export default function ProfileForm({ initialData }: ProfileFormProps) {
@@ -27,7 +26,6 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
     email: initialData?.email || '',
     cell_phone: initialData?.cell_phone || '',
     home_address: initialData?.home_address || '',
-    max_travel_distance: initialData?.max_travel_distance || 50,
   });
   const [errors, setErrors] = React.useState<Record<string, string>>({});
 
@@ -45,9 +43,6 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
     }
     if (!validateRequired(formData.home_address)) {
       newErrors.home_address = 'Home address is required';
-    }
-    if (formData.max_travel_distance <= 0) {
-      newErrors.max_travel_distance = 'Must be greater than 0';
     }
 
     setErrors(newErrors);
@@ -106,15 +101,6 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
         onChange={(e) => setFormData((prev) => ({ ...prev, home_address: e.target.value }))}
         error={errors.home_address}
         placeholder="Enter your home address"
-      />
-
-      <Input
-        label="Maximum Travel Distance (km)"
-        type="number"
-        value={formData.max_travel_distance}
-        onChange={(e) => setFormData((prev) => ({ ...prev, max_travel_distance: parseInt(e.target.value) }))}
-        error={errors.max_travel_distance}
-        min="1"
       />
 
       <Button type="submit" isLoading={isLoading}>

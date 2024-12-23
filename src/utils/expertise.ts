@@ -2,12 +2,9 @@ import { ExpertiseLevel } from '../types/database';
 
 export const expertiseLevels: ExpertiseLevel[] = [
   'labourer',
-  '1st_year_apprentice',
-  '2nd_year_apprentice',
-  '3rd_year_apprentice',
-  '4th_year_apprentice',
+  'apprentice',
   'journeyman',
-  'master_level',
+  'foreman'
 ];
 
 export function formatExpertiseLevel(level: ExpertiseLevel): string {
