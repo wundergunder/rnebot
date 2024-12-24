@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, handleSupabaseError } from '../lib/supabase';
 import { Profile } from '../types/database';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -17,13 +17,14 @@ export function useProfile() {
       }
 
       try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-
-        if (error) throw error;
+        const data = await handleSupabaseError(
+          supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single()
+        );
+        
         setProfile(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');

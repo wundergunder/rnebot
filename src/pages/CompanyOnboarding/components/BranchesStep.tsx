@@ -1,8 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '../../../components/ui/Button';
-import BranchForm from '../../../components/branches/BranchForm';
-import BranchList from '../../../components/branches/BranchList';
-import { useBranches } from '../../../hooks/useBranches';
 
 interface BranchesStepProps {
   companyId: string;
@@ -10,29 +7,25 @@ interface BranchesStepProps {
   onComplete: () => void;
 }
 
-export default function BranchesStep({
-  companyId,
-  onBack,
-  onComplete,
-}: BranchesStepProps) {
-  const { branches, loading } = useBranches(companyId);
+export default function BranchesStep({ companyId, onBack, onComplete }: BranchesStepProps) {
+  const [error, setError] = useState<string | null>(null);
+
+  const handleComplete = async () => {
+    try {
+      // Simulate API call or other finalization logic
+      await onComplete();
+      setError(null);
+    } catch (e) {
+      setError('Failed to complete onboarding. Please try again.');
+    }
+  };
 
   return (
-    <div className="space-y-6">
-      <BranchForm companyId={companyId} />
-      {!loading && branches.length > 0 && (
-        <div className="mt-8">
-          <h3 className="text-lg font-medium text-white mb-4">Added Branches</h3>
-          <BranchList branches={branches} />
-        </div>
-      )}
-      <div className="flex justify-between mt-6">
-        <Button variant="secondary" onClick={onBack}>
-          Back
-        </Button>
-        <Button onClick={onComplete}>
-          Complete Setup
-        </Button>
+    <div>
+      {error && <p className="text-red-500">{error}</p>}
+      <div className="flex justify-between">
+        <Button onClick={onBack}>Back</Button>
+        <Button onClick={handleComplete}>Complete</Button>
       </div>
     </div>
   );

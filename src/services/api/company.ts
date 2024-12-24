@@ -2,35 +2,31 @@ import { supabase } from '../../lib/supabase';
 import { Company } from '../../types/database';
 
 export async function createCompany(data: Partial<Company>) {
-  const { data: company, error } = await supabase
-    .from('companies')
-    .insert([data])
-    .select()
-    .single();
+  try {
+    const { data: company, error } = await supabase
+      .from('companies')
+      .insert([data])
+      .select()
+      .single();
 
-  if (error) throw error;
-  return company;
+    if (error) throw new Error(`Failed to create company: ${error.message}`);
+    return company;
+  } catch (err) {
+    throw new Error(err.message || 'An unexpected error occurred');
+  }
 }
 
 export async function updateCompany(id: string, data: Partial<Company>) {
-  const { data: company, error } = await supabase
-    .from('companies')
-    .update(data)
-    .eq('id', id)
-    .select()
-    .single();
+  try {
+    const { data: company, error } = await supabase
+      .from('companies')
+      .update(data)
+      .eq('id', id)
+      .single();
 
-  if (error) throw error;
-  return company;
-}
-
-export async function getCompany(id: string) {
-  const { data, error } = await supabase
-    .from('companies')
-    .select('*')
-    .eq('id', id)
-    .single();
-
-  if (error) throw error;
-  return data;
+    if (error) throw new Error(`Failed to update company: ${error.message}`);
+    return company;
+  } catch (err) {
+    throw new Error(err.message || 'An unexpected error occurred');
+  }
 }

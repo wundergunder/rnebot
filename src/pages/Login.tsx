@@ -1,21 +1,13 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from '../lib/supabase';
 import { Bot } from 'lucide-react';
 import { Card } from '../components/ui/Card';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuthRedirect } from '../hooks/useAuthRedirect';
 
 export default function Login() {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-
-  useEffect(() => {
-    if (user) {
-      navigate('/dashboard');
-    }
-  }, [user, navigate]);
+  useAuthRedirect();
 
   return (
     <div className="max-w-md mx-auto">
@@ -57,6 +49,7 @@ export default function Login() {
             }
           }}
           providers={['google']}
+          redirectTo={`${window.location.origin}/role-selection`}
         />
       </Card>
     </div>

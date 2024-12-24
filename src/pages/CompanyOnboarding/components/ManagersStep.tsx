@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Input } from '../../../components/ui/Input';
 import { Button } from '../../../components/ui/Button';
 
@@ -13,8 +13,6 @@ interface ManagersStepProps {
   onAddManager: () => void;
   onBack: () => void;
   onNext: () => void;
-  errors: Record<string, string>;
-  isLoading: boolean;
 }
 
 export default function ManagersStep({
@@ -23,48 +21,48 @@ export default function ManagersStep({
   onAddManager,
   onBack,
   onNext,
-  errors,
-  isLoading,
 }: ManagersStepProps) {
+  const [errors, setErrors] = useState<Record<number, string | null>>({});
+
+  const handleNext = () => {
+    const newErrors: Record<number, string | null> = {};
+    let hasError = false;
+
+    managers.forEach((manager, index) => {
+      if (!manager.name || !manager.email) {
+        newErrors[index] = 'Both name and email are required.';
+        hasError = true;
+      }
+    });
+
+    setErrors(newErrors);
+    if (hasError) return;
+
+    onNext();
+  };
+
   return (
-    <div className="space-y-6">
+    <div>
       {managers.map((manager, index) => (
         <div key={index} className="space-y-4">
-          <h3 className="text-lg font-medium text-white">
-            Manager {index + 1}
-          </h3>
           <Input
-            label="Full Name"
+            label="Manager Name"
             value={manager.name}
             onChange={(e) => onManagerChange(index, 'name', e.target.value)}
-            error={errors[`manager${index}Name`]}
-            placeholder="Enter manager's full name"
+            error={errors[index]}
           />
           <Input
-            label="Email Address"
-            type="email"
+            label="Manager Email"
             value={manager.email}
             onChange={(e) => onManagerChange(index, 'email', e.target.value)}
-            error={errors[`manager${index}Email`]}
-            placeholder="Enter manager's email"
+            error={errors[index]}
           />
         </div>
       ))}
-      <Button
-        type="button"
-        variant="secondary"
-        onClick={onAddManager}
-        className="w-full"
-      >
-        Add Another Manager
-      </Button>
+      <Button onClick={onAddManager}>Add Manager</Button>
       <div className="flex justify-between">
-        <Button variant="secondary" onClick={onBack}>
-          Back
-        </Button>
-        <Button onClick={onNext} isLoading={isLoading}>
-          Create Company
-        </Button>
+        <Button onClick={onBack}>Back</Button>
+        <Button onClick={handleNext}>Next</Button>
       </div>
     </div>
   );

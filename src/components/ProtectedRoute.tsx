@@ -30,6 +30,16 @@ export default function ProtectedRoute({ children, adminOnly = false }: Protecte
     return <Navigate to="/role-selection" replace />;
   }
 
+  // Redirect to appropriate page if no company is set
+  if (!profile.company_id) {
+    if (profile.role === 'manager') {
+      return <Navigate to="/onboarding" replace />;
+    }
+    if (profile.role === 'worker') {
+      return <Navigate to="/join-company" replace />;
+    }
+  }
+
   // Admin only routes check
   if (adminOnly && profile.role !== 'admin') {
     return <Navigate to="/dashboard" replace />;

@@ -10,7 +10,23 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
-    persistSession: true,
     autoRefreshToken: true,
-  },
+    persistSession: true,
+    detectSessionInUrl: false,
+    flowType: 'implicit'
+  }
 });
+
+export async function handleSupabaseError<T>(
+  promise: Promise<{ data: T | null; error: any }>
+): Promise<T> {
+  try {
+    const { data, error } = await promise;
+    if (error) throw error;
+    if (!data) throw new Error('No data returned');
+    return data;
+  } catch (error: any) {
+    console.error('Supabase error:', error);
+    throw new Error(error.message || 'An error occurred');
+  }
+}
