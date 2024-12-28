@@ -1,32 +1,17 @@
 import { supabase } from '../../lib/supabase';
-import { Company } from '../../types/database';
 
-export async function createCompany(data: Partial<Company>) {
+export async function checkEmailInCompany(email: string) {
   try {
-    const { data: company, error } = await supabase
-      .from('companies')
-      .insert([data])
-      .select()
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('company_id, role')
+      .eq('email', email)
       .single();
 
-    if (error) throw new Error(`Failed to create company: ${error.message}`);
-    return company;
+    if (error) throw error;
+    return data;
   } catch (err) {
-    throw new Error(err.message || 'An unexpected error occurred');
-  }
-}
-
-export async function updateCompany(id: string, data: Partial<Company>) {
-  try {
-    const { data: company, error } = await supabase
-      .from('companies')
-      .update(data)
-      .eq('id', id)
-      .single();
-
-    if (error) throw new Error(`Failed to update company: ${error.message}`);
-    return company;
-  } catch (err) {
-    throw new Error(err.message || 'An unexpected error occurred');
+    console.error('Error checking email:', err);
+    return null;
   }
 }

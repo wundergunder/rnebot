@@ -1,17 +1,24 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Bot, Home, Briefcase, User, LogOut, Shield } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useProfile } from '../hooks/useProfile';
+import { Button } from './ui/Button';
 
 export default function Navigation() {
   const { signOut } = useAuth();
-  const navigate = useNavigate();
   const { profile } = useProfile();
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const handleSignOut = async () => {
-    await signOut();
-    navigate('/login');
+    setIsLoading(true);
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -40,12 +47,16 @@ export default function Navigation() {
             <Link to="/profile" className="text-gray-300 hover:text-white">
               <User className="w-6 h-6" />
             </Link>
-            <button
+            <Button
               onClick={handleSignOut}
-              className="text-gray-300 hover:text-white"
+              disabled={isLoading}
+              variant="secondary"
+              size="sm"
+              className="flex items-center gap-2"
             >
-              <LogOut className="w-6 h-6" />
-            </button>
+              <LogOut className="w-5 h-5" />
+              {isLoading ? 'Signing out...' : 'Sign out'}
+            </Button>
           </div>
         </div>
       </div>

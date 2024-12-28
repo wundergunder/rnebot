@@ -1,9 +1,9 @@
 import React from 'react';
 import { Auth } from '@supabase/auth-ui-react';
-import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from '../lib/supabase';
 import { Bot } from 'lucide-react';
 import { Card } from '../components/ui/Card';
+import { authTheme } from '../utils/authTheme';
 import { useAuthRedirect } from '../hooks/useAuthRedirect';
 
 export default function Login() {
@@ -26,30 +26,9 @@ export default function Login() {
       <Card>
         <Auth
           supabaseClient={supabase}
-          appearance={{
-            theme: ThemeSupa,
-            variables: {
-              default: {
-                colors: {
-                  brand: '#06b6d4',
-                  brandAccent: '#0891b2',
-                  inputText: 'white',
-                  inputBackground: '#374151',
-                  inputBorder: '#4B5563',
-                  inputLabelText: '#E5E7EB',
-                  inputPlaceholder: '#9CA3AF'
-                }
-              }
-            },
-            className: {
-              container: 'w-full',
-              button: 'w-full',
-              input: 'rounded-md bg-gray-700 border-gray-600 text-white',
-              label: 'text-gray-300',
-            }
-          }}
-          providers={['google']}
-          redirectTo={`${window.location.origin}/role-selection`}
+          appearance={authTheme}
+          providers={[]}
+          redirectTo={`${window.location.origin}/account-setup`}
         />
       </Card>
     </div>

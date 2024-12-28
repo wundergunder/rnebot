@@ -1,24 +1,11 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Auth } from '@supabase/auth-ui-react';
-import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from '../../lib/supabase';
 import { Bot } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
+import { authTheme } from '../../utils/authTheme';
 
 export default function Home() {
-  const navigate = useNavigate();
-
-  React.useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN') {
-        navigate('/role-selection');
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
   return (
     <div className="max-w-md mx-auto">
       <div className="text-center mb-8">
@@ -34,18 +21,9 @@ export default function Home() {
       <Card>
         <Auth
           supabaseClient={supabase}
-          appearance={{
-            theme: ThemeSupa,
-            variables: {
-              default: {
-                colors: {
-                  brand: '#06b6d4',
-                  brandAccent: '#0891b2',
-                }
-              }
-            }
-          }}
-          providers={['google']}
+          appearance={authTheme}
+          providers={[]}
+          redirectTo={`${window.location.origin}/account-setup`}
         />
       </Card>
 

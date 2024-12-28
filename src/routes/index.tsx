@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import Layout from '../components/Layout';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
-import RoleSelection from '../pages/RoleSelection';
+import AccountSetup from '../pages/AccountSetup';
 import JoinCompany from '../pages/JoinCompany';
 import CompanyOnboarding from '../pages/CompanyOnboarding';
 import Dashboard from '../pages/Dashboard';
@@ -16,7 +16,7 @@ export default function AppRoutes() {
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/role-selection" element={<RoleSelection />} />
+        <Route path="/account-setup" element={<AccountSetup />} />
         <Route path="/join-company" element={<JoinCompany />} />
         <Route path="/onboarding" element={<CompanyOnboarding />} />
 

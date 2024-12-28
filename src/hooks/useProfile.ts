@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase, handleSupabaseError } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 import { Profile } from '../types/database';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -17,18 +17,17 @@ export function useProfile() {
       }
 
       try {
-        const data = await handleSupabaseError(
-          supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', user.id)
-            .single()
-        );
-        
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (error) throw error;
         setProfile(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
         console.error('Error fetching profile:', err);
+        setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
         setLoading(false);
       }
